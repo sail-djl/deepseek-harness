@@ -1,0 +1,13 @@
+# 账号信息
+
+## DeepSeek API
+# API Key: sk-xxx
+# Base URL: https://api.deepseek.com (默认)
+
+## Redis (如启用)
+# URL: redis://192.168.1.98:6379
+# Password: bz@2026++
+
+## GitLab (如启用 MCP)
+# URL: https://gitlab.company.com
+# Token: glpat-xxx

@@ -1,0 +1,91 @@
+# DeepSeekHarness 项目上下文
+
+## 项目概述
+
+项目名称：DeepSeek Harness (dsh)
+包名：@deepseek-ai/dsh-root
+应用描述：开源 Agent 框架，基于 Cordis 微内核的插件化 AI Agent 运行环境
+当前版本：0.1.1-rc.2 (开发者预览版)
+许可证：MIT
+
+## 技术栈信息
+
+语言：TypeScript 6.0+ (ESM)
+运行时：Node.js ^22.19.0 或 >=24.0.0
+包管理：pnpm 11.7.0 (workspaces)
+构建工具：tsc + tsdown + Vite
+测试框架：Vitest 4.1.8
+代码检查：oxlint 1.76.0
+微内核：Cordis (vendor/cordis)
+
+## 项目结构
+
+应用入口：
+  CLI：apps/cli/ — dsh 命令行入口
+  Web：apps/web/ — Web UI 前端
+
+核心包 (packages/)：
+  core/ — Agent, Session, Tools, Scope
+  llm/ — LLM 适配器
+  fs/ — 文件系统工具
+  shell/ — Shell 执行
+  terminal/ — 终端
+  sandbox/ — 沙箱
+  session/ — 会话管理
+  client/ — 客户端运行时
+  web/ — Web 服务
+  sdk/ — SDK
+  boot/ — 启动引导
+  bundle/ — 分发包
+  settings/ — 设置
+  credentials/ — 凭证管理
+  lsp/ — 语言服务器
+  plan/ — 计划模式
+  goal/ — 目标管理
+  workflow/ — 工作流
+  subagent/ — 子代理
+
+第三方依赖 (vendor/)：
+  cordis/ — 插件化微内核
+  cosmokit/ — 工具库
+  group/ — 分组
+  hmr/ — 热更新
+  loader/ — 加载器
+
+应用：
+  apps/cli/ — CLI 入口
+  apps/web/ — Web UI (Vite + React)
+  examples/ — 示例项目
+  website/ — 文档网站
+
+## 核心配置
+
+TypeScript 配置：
+  tsconfig.json — 解决方案根
+  tsconfig.host.json — Host 聚合 (服务端)
+  tsconfig.client.json — Client 聚合 (客户端)
+  tsconfig.base.json — 共享编译选项
+
+构建脚本：
+  pnpm run build — 完整构建
+  pnpm run build:web — 仅构建 Web 前端
+  pnpm run typecheck — 类型检查
+  pnpm run test — 运行测试
+
+## 环境变量
+
+DEEPSEEK_API_KEY — DeepSeek API 密钥 (必填)
+DEEPSEEK_BASE_URL — 自定义 API 地址 (可选)
+
+## Git 仓库
+
+Git 仓库：
+  地址：https://github.com/deepseek-ai/deepseek-harness
+  分支：master
+
+## 注意事项
+
+- 项目处于开发者预览阶段，存在不兼容变更
+- Host/Client 双聚合架构，新增包只能注册到其中一个
+- 插件配置通过 cordis.patch.yml 管理，patch 替换整行配置（非深度合并）
+- Windows 下 landlock-run 相关包不支持（Linux 专用）

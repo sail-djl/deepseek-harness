@@ -1,0 +1,22 @@
+项目名称：DSH CLI 源码层
+路径：apps/cli/src/
+文件数：6 个 TypeScript 源文件
+
+核心文件：
+  bin.ts         → CLI 入口，mode 分发
+  args.ts        → commander 参数解析
+  profile-boot.ts → Profile 启动核心
+  plugin.ts      → 插件管理 (pnpm 转发)
+  dump-config.ts → 配置导出
+  process-shutdown.ts → 进程关闭处理
+
+核心依赖：
+  @deepseek-ai/dsh-app-boot  → boot/compose/loadProfile/patch 组合
+  @deepseek-ai/dsh-home-paths → $DSH_HOME 解析
+  @deepseek-ai/dsh-cmdline    → 命令参数透传
+  commander                   → 参数解析
+
+Git 仓库：
+  地址：https://github.com/deepseek-ai/deepseek-harness
+  目录：apps/cli/src
+  分支：main

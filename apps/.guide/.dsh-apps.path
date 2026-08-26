@@ -1,0 +1,30 @@
+项目名称：DeepSeek Harness (DSH) Apps
+包名：@deepseek-ai/dsh (cli) / @deepseek-ai/dsh-web-frontend (web)
+应用描述：DSH 入口应用层 — CLI 命令行 + Web 前端界面
+当前版本：0.1.1-rc.2
+模块类型：ESM (type: module)
+包管理器：pnpm@11.7.0
+Node.js 引擎：^22.19.0 或 >=24.0.0
+
+技术栈：
+  CLI 框架：commander.js
+  前端框架：React 18 + TypeScript 6
+  构建工具：Vite 6 + tsdown
+  测试框架：Vitest 4 + Playwright
+
+应用结构：
+  apps/cli/         ← CLI 入口 (dsh web / dsh plugin / dsh --dump-config)
+  apps/web/         ← Web 前端 (Vite + React SPA)
+  apps/.guide/      ← 本 guide 目录
+
+关键文件路径：
+  CLI 入口：apps/cli/src/bin.ts
+  参数解析：apps/cli/src/args.ts
+  Profile 启动：apps/cli/src/profile-boot.ts
+  内置 Preset：apps/cli/config/agent-presets/
+  Web 入口：apps/web/src/main.ts
+  Vite 配置：apps/web/vite.config.ts
+
+Git 仓库：
+  地址：https://github.com/deepseek-ai/deepseek-harness
+  分支：main
