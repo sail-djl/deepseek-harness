@@ -1,0 +1,15 @@
+# 账号信息
+
+## DeepSeek API
+
+API Key: (待填写)
+平台地址: https://platform.deepseek.com/api_keys
+
+## Git 仓库
+
+地址: https://github.com/deepseek-ai/deepseek-harness
+分支: master
+
+## 本地服务
+
+Web UI: http://127.0.0.1:3080
