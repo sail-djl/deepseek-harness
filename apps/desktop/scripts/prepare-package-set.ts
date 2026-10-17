@@ -164,6 +164,8 @@ function main(): void {
     buildPaths.packedDsh,
     buildPaths.packedVendor,
     buildPaths.packedLandlock,
+    // Third-party bundle tarballs committed beside web-app; they are not release-family members.
+    join(REPOSITORY_ROOT, 'packages', 'bundle', 'web-app', 'vendor'),
   ]
   const { values } = parseArgs({
     options: { from: { type: 'string', multiple: true }, out: { type: 'string' } },
