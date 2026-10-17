@@ -1,0 +1,69 @@
+# ============================================================
+# .guide/.version.yaml — 上游 master 与 本分支 同步状态标记
+#
+# 用途：一眼看清「本分支相对上游 master 落后/领先多少、版本号是否对齐」
+# 维护：任何同步 / 升级操作后更新本文件；流程见
+#       win-dsh-package-sec/scenes/DeepSeek Harness 版本维护.md（阶段 0 巡检 → 阶段 2 同步）
+# 版本明细：.version/ 下每个版本一个 md，索引见 .version/0 索引.md
+# ============================================================
+
+checked_at: "2026-10-17"        # 本文件数据采集时间
+
+# ---------- 仓库 ----------
+repo:
+  name: deepseek-harness
+  path: E:\baizhoucode\companyagent\dsharnessguide
+  remote:
+    upstream: https://github.com/deepseek-ai/deepseek-harness.git
+    origin: https://github.com/sail-djl/deepseek-harness.git
+
+# ---------- 上游 master ----------
+upstream:
+  ref: upstream/master
+  commit: 1517a4dbca
+  version: 0.2.1-alpha.5
+  tag: dsh-v0.2.1-alpha.5
+  released_at: "2026-10-16"
+
+# ---------- 本分支 ----------
+branch:
+  name: master-guide
+  commit: 3cc2ac0f57
+  version: 0.2.1-alpha.4
+  tracks: origin/master-guide
+
+# ---------- 同步状态 ----------
+# status 取值：
+#   synced      落后 0 / 领先 0   —— 与上游完全一致
+#   local-ahead 落后 0 / 领先 >0  —— 上游内容已全部包含，本地另有独有提交
+#   behind      落后 >0 / 领先 0   —— 需快进同步（见场景阶段 0）
+#   diverged    落后 >0 / 领先 >0  —— 双向分叉，须人工确认后再合并
+sync:
+  status: diverged
+  behind: 36                 # 本分支落后上游 master 的提交数
+  ahead: 3                   # 本分支领先上游 master 的提交数（本地独有）
+  version_aligned: false     # 版本号是否与上游一致（本地 0.2.1-alpha.4 / 上游 0.2.1-alpha.5）
+  ahead_commits:
+    - commit: 3cc2ac0f57
+      message: "Merge remote-tracking branch 'upstream/master' into master-guide"
+    - commit: 5806f599f6
+      message: "Merge remote-tracking branch 'upstream/master' into master-guide"
+    - commit: ebcc6ce05a
+      message: "perf guide 更新"
+
+# ---------- 关联的版本变更跟踪 ----------
+version_tracking:
+  dir: .guide/.version
+  index: .guide/.version/0 索引.md
+  latest: .guide/.version/0.2.1-alpha.2.md
+  recorded:
+    - 0.2.0-rc.2
+    - 0.2.1-alpha.1
+    - 0.2.1-alpha.2
+
+# ---------- 复核命令（PowerShell） ----------
+# $g = 'E:\baizhoucode\companyagent\dsharnessguide'
+# git -C $g fetch upstream
+# git -C $g rev-list --count HEAD..upstream/master      # behind
+# git -C $g rev-list --count upstream/master..HEAD      # ahead
+# git -C $g log --oneline upstream/master..HEAD         # ahead_commits

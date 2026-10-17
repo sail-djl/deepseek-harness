@@ -1,9 +1,9 @@
 # DSH 启动脚本
 # Usage:
-#   .\.guide\dsh-start.ps1              # 启动 (dev)
-#   .\.guide\dsh-start.ps1 restart      # 重启
-#   .\.guide\dsh-start.ps1 stop         # 停止
-#   .\.guide\dsh-start.ps1 -Env prod    # prod 环境启动
+#   .\.guide\resources\scripts\dsh-start.ps1              # 启动 (dev)
+#   .\.guide\resources\scripts\dsh-start.ps1 restart      # 重启
+#   .\.guide\resources\scripts\dsh-start.ps1 stop         # 停止
+#   .\.guide\resources\scripts\dsh-start.ps1 -Env prod    # prod 环境启动
 
 param(
     [ValidateSet("start", "restart", "stop")]
