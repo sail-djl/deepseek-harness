@@ -4,16 +4,21 @@ import type { SignInAttemptId } from '@deepseek-ai/dsh-deepseek-account/types'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { app, BrowserWindow, ipcMain, type BrowserWindowConstructorOptions, type IpcMainInvokeEvent } from 'electron'
-import type { DesktopLocale } from './locale.ts'
+import { DEFAULT_DESKTOP_BRAND, type DesktopLocale } from './locale.ts'
 import { WELCOME_IPC, type WelcomeOperations } from './welcome-api.ts'
 
 /**
  * Resolve the fixed-size welcome window's native material and controls.
  * @param platform - operating system hosting Electron.
  * @param locale - shell-owned localized copy.
- * @returns sandboxed window options with a locale-only preload.
+ * @param brand - display product name forwarded to the welcome renderer.
+ * @returns sandboxed window options whose preload receives locale and brand arguments.
  */
-export function welcomeWindowOptions(platform: NodeJS.Platform, locale: DesktopLocale): BrowserWindowConstructorOptions {
+export function welcomeWindowOptions(
+  platform: NodeJS.Platform,
+  locale: DesktopLocale,
+  brand: string = DEFAULT_DESKTOP_BRAND,
+): BrowserWindowConstructorOptions {
   return {
     width: 600,
     height: 700,
@@ -38,7 +43,7 @@ export function welcomeWindowOptions(platform: NodeJS.Platform, locale: DesktopL
     } as const : {}),
     webPreferences: {
       preload: fileURLToPath(new URL('./preload-welcome.cjs', import.meta.url)),
-      additionalArguments: [`--dsh-welcome-locale=${locale.id}`],
+      additionalArguments: [`--dsh-welcome-locale=${locale.id}`, `--dsh-welcome-brand=${brand}`],
       nodeIntegration: false,
       contextIsolation: true,
       sandbox: true,
@@ -54,10 +59,15 @@ let disposeActiveHandlers: (() => void) | undefined
  * Replaces IPC ownership immediately; the caller closes the previous native window.
  * @param locale - shell-owned localized copy.
  * @param operations - credential write and this-launch-only skip actions.
+ * @param brand - display product name forwarded to the welcome renderer.
  * @returns the visible window; a failed load destroys it before rejecting.
  */
-export async function openWelcomeWindow(locale: DesktopLocale, operations: WelcomeOperations): Promise<BrowserWindow> {
-  const options = welcomeWindowOptions(process.platform, locale)
+export async function openWelcomeWindow(
+  locale: DesktopLocale,
+  operations: WelcomeOperations,
+  brand: string = DEFAULT_DESKTOP_BRAND,
+): Promise<BrowserWindow> {
+  const options = welcomeWindowOptions(process.platform, locale, brand)
   const window = new BrowserWindow(options)
   disposeActiveHandlers?.()
   let active = true

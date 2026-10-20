@@ -1,6 +1,6 @@
 /** Resolve build-owned Desktop paths without sharing mutable state across release targets. */
 
-import { join, resolve } from 'node:path'
+import { basename, join, resolve } from 'node:path'
 
 const APP_ROOT = resolve(import.meta.dirname, '..')
 const BUILD_ROOT = join(APP_ROOT, '.desktop-build')
@@ -36,19 +36,33 @@ function assertSupportedTarget(target) {
 }
 
 /**
+ * Derive the directory suffix that separates one brand's artifact output from the default build.
+ * The suffix is the brand directory's own name, so a `resources/brands/baizhou` build writes
+ * `unsigned-artifacts-baizhou` beside the unbranded `unsigned-artifacts`.
+ * @param {NodeJS.ProcessEnv} env - Packaging environment.
+ * @returns {string} `-<brand directory name>` when a brand directory is set, otherwise an empty string.
+ */
+export function resolveDesktopBrandSuffix(env = process.env) {
+  const brandDirectory = env.DSH_DESKTOP_BRAND_DIR?.trim()
+  if (brandDirectory === undefined || brandDirectory === '') return ''
+  return `-${basename(resolve(brandDirectory))}`
+}
+
+/**
  * Return the mutable preparation and artifact directories owned by one release target.
  * @param {'mac-arm64' | 'mac-x64' | 'win-x64'} target - Supported Desktop target name.
+ * @param {string} [brandSuffix] - Directory suffix from `resolveDesktopBrandSuffix` for branded artifact output.
  * @returns {{ root: string, artifacts: string, unsignedArtifacts: string, unnotarizedArtifacts: string, runtime: string, packageSet: string, dsh: string, dshPnpm: string, electron: string, packedDsh: string, packedVendor: string, packedLandlock: string, downloads: string }} Target paths plus the shared immutable download cache.
  */
-export function desktopTargetBuildPaths(target) {
+export function desktopTargetBuildPaths(target, brandSuffix = '') {
   assertSupportedTarget(target)
   const root = join(BUILD_ROOT, 'targets', target)
   const packed = join(root, 'packed')
   return {
     root,
-    artifacts: join(root, 'artifacts'),
-    unsignedArtifacts: join(root, 'unsigned-artifacts'),
-    unnotarizedArtifacts: join(root, 'unnotarized-artifacts'),
+    artifacts: join(root, `artifacts${brandSuffix}`),
+    unsignedArtifacts: join(root, `unsigned-artifacts${brandSuffix}`),
+    unnotarizedArtifacts: join(root, `unnotarized-artifacts${brandSuffix}`),
     runtime: join(root, 'runtime'),
     packageSet: join(root, 'package-set'),
     dsh: join(root, 'dsh'),
@@ -87,7 +101,7 @@ export function resolveDesktopTargetBuildPaths(
   hostPlatform = process.platform,
   hostArch = process.arch,
 ) {
-  return desktopTargetBuildPaths(resolveDesktopBuildTarget(env, hostPlatform, hostArch))
+  return desktopTargetBuildPaths(resolveDesktopBuildTarget(env, hostPlatform, hostArch), resolveDesktopBrandSuffix(env))
 }
 
 /**
