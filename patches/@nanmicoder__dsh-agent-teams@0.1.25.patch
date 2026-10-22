@@ -1,0 +1,14 @@
+diff --git a/package.json b/package.json
+index 519313abf74faa138f39a7553f4906c91c0e69c8..5a33743e18b603c56a831bd5afe4b454e3c25035 100644
+--- a/package.json
++++ b/package.json
+@@ -57,7 +57,8 @@
+     "llm"
+   ],
+   "engines": {
+-    "node": "^22.19.0 || >=24"
++    "node": "^22.19.0 || >=24",
++    "dsh": "0.2.1-alpha.5"
+   },
+   "publishConfig": {
+     "access": "public",
