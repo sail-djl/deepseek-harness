@@ -7,7 +7,7 @@
 # 版本明细：.version/ 下每个版本一个 md，索引见 .version/0 索引.md
 # ============================================================
 
-checked_at: "2026-10-17"        # 本文件数据采集时间
+checked_at: "2026-10-17"        # 本文件数据采集时间（alpha.5 合并后刷新）
 
 # ---------- 仓库 ----------
 repo:
@@ -25,11 +25,11 @@ upstream:
   tag: dsh-v0.2.1-alpha.5
   released_at: "2026-10-16"
 
-# ---------- 本分支 ----------
+# ---------- 本分支（纯净版打包分支，2026-10-17 起） ----------
 branch:
   name: master-guide
-  commit: 3cc2ac0f57
-  version: 0.2.1-alpha.4
+  commit: adb75b679c
+  version: 0.2.1-alpha.5
   tracks: origin/master-guide
 
 # ---------- 同步状态 ----------
@@ -39,11 +39,15 @@ branch:
 #   behind      落后 >0 / 领先 0   —— 需快进同步（见场景阶段 0）
 #   diverged    落后 >0 / 领先 >0  —— 双向分叉，须人工确认后再合并
 sync:
-  status: diverged
-  behind: 36                 # 本分支落后上游 master 的提交数
-  ahead: 3                   # 本分支领先上游 master 的提交数（本地独有）
-  version_aligned: false     # 版本号是否与上游一致（本地 0.2.1-alpha.4 / 上游 0.2.1-alpha.5）
+  status: local-ahead
+  behind: 0                   # 本分支落后上游 master 的提交数（alpha.5 已合入）
+  ahead: 5                    # 本分支领先上游 master 的提交数（.guide/ 文档 + 合并提交）
+  version_aligned: true       # 版本号是否与上游一致（0.2.1-alpha.5 = 0.2.1-alpha.5）
   ahead_commits:
+    - commit: adb75b679c
+      message: "perf guide 更新；"
+    - commit: 47e5dfe7c7
+      message: "Merge remote-tracking branch 'upstream/master' into master-guide"
     - commit: 3cc2ac0f57
       message: "Merge remote-tracking branch 'upstream/master' into master-guide"
     - commit: 5806f599f6
@@ -51,19 +55,33 @@ sync:
     - commit: ebcc6ce05a
       message: "perf guide 更新"
 
+# ---------- 同步日志（发生同步时追加 from/to 记录） ----------
+sync_log:
+  - date: "2026-10-17"
+    branch: master-guide
+    from: 3cc2ac0f57
+    to: 47e5dfe7c7
+    behind_before: 36
+    ahead_before: 3
+    method: merge upstream/master（零冲突）
+    note: "合并前预检：上游自 merge-base(86a402200d) 起改 586 文件，与 .guide/ 脏文件交集 0，直接合并；合并后用户提交 adb75b679c 归档 .guide/ 变更"
+
 # ---------- 关联的版本变更跟踪 ----------
 version_tracking:
   dir: .guide/.version
   index: .guide/.version/0 索引.md
-  latest: .guide/.version/0.2.1-alpha.2.md
+  latest: .guide/.version/0.2.1-alpha.5.md
   recorded:
     - 0.2.0-rc.2
     - 0.2.1-alpha.1
     - 0.2.1-alpha.2
+    - 0.2.1-alpha.5
+  # 缺口：0.2.1-alpha.3 / 0.2.1-alpha.4 记录待补（两版经合并 3cc2ac0f57 一并引入，未逐版建档）
+  # 维护约定（2026-10-17 用户拍板）：每次打包完成后必须核验并补全本目录 —— 新增/追加 <版本号>.md + 索引总览行
 
 # ---------- 复核命令（PowerShell） ----------
 # $g = 'E:\baizhoucode\companyagent\dsharnessguide'
 # git -C $g fetch upstream
-# git -C $g rev-list --count HEAD..upstream/master      # behind
-# git -C $g rev-list --count upstream/master..HEAD      # ahead
-# git -C $g log --oneline upstream/master..HEAD         # ahead_commits
+# git -C $g rev-list --count master-guide..upstream/master   # behind
+# git -C $g rev-list --count upstream/master..master-guide   # ahead
+# git -C $g log --oneline upstream/master..master-guide      # ahead_commits
