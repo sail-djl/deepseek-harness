@@ -1,0 +1,22 @@
+项目名称：Agent Preset 目录
+路径：apps/cli/config/agent-presets/
+说明：5 个内置 Agent Preset，决定 Agent 的工具集和提示词
+
+Preset 清单：
+  standard  → 标准模式（完整编码，~23 工具）
+  code      → PTC 模式（TypeScript 批量编排）
+  cordis    → 创造模式（自修改运行时 + preset 调试）
+  minimal   → 极简模式（仅 bash + 编辑器，3 工具）
+  my-agent  → 用户自定义模板（空）
+
+选择指南：
+  日常开发 → standard
+  批量操作 → code
+  创建 preset → cordis
+  快速测试 → minimal
+  自定义 → 复制 standard 到 my-agent/
+
+Git 仓库：
+  地址：https://github.com/deepseek-ai/deepseek-harness
+  目录：apps/cli/config/agent-presets
+  分支：main
