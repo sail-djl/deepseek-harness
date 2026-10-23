@@ -22,7 +22,7 @@ Fork：`https://github.com/sail-djl/deepseek-harness.git`（origin）
 
 - guide 文档只在 **`doc` 分支** 维护：通用规范 `guide/`，定制差异 `guide_code/` / `guide_team/` / `guide_work/`，本地检出于 `.guide/`（`.master` 仓库的 `doc` 分支 worktree）。
 - 主分支不再放 guide 文件：`code` / `team` / `work` 的 `.guide*` 目录已于 2026-10-23 移除（提交 `ead6c904038` / `3e5c8de826` / `8cdcec3ec3`），内容已全量收编进 `doc` 分支。
-- `master-guide` 分支保留在 origin（`eb9af801f5`），本地检出已移除，不再作为文档工作区。
+- `master_guide` 分支保留在 origin（`eb9af801f5`，原名 `master-guide`，2026-10-23 改名），本地检出已移除，不再作为文档工作区。
 
 ---
 
@@ -57,4 +57,4 @@ Fork：`https://github.com/sail-djl/deepseek-harness.git`（origin）
 
 - 本映射表变化（新增定制版本、调整目标业务分支）时更新本文件，并同步 skill `decisions.md` 的对应决策状态。
 - 本文档由 2026-10-23 的架构确认产生（三层职责模型 + `.guide` 定性 + 命名方案 + 上游同步场景，用户逐条确认）。
-- 2026-10-23 同日演进：建立 `doc` 分支并收编全部 guide 文档 → 三定制仓库主分支移除 guide 文件 → `master-guide` 检出移除（分支保留在 origin）→ `.guide/` 改为 `doc` 分支检出（原 `.doc` 目录改名）。
+- 2026-10-23 同日演进：建立 `doc` 分支并收编全部 guide 文档 → 三定制仓库主分支移除 guide 文件 → `master-guide` 检出移除（分支保留在 origin）→ `.guide/` 改为 `doc` 分支检出（原 `.doc` 目录改名）→ `master-guide` 改名 `master_guide`（D-005 下划线命名，重推 origin）。

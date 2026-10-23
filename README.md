@@ -1,7 +1,7 @@
 # doc 分支 —— 规范文档登记中心
 
 > 定位：**只管规范与文档，不承载业务代码，也不直接替代各仓库中实际加载的 Skill 执行文件。**
-> 分支关系：`doc` 与 `master`（代码基线）互不合并；`master-guide` 分支保留在 origin（检出已移除），`doc` 是 guide 文档的唯一维护点。
+> 分支关系：`doc` 与 `master`（代码基线）互不合并；`master_guide`（原名 `master-guide`）分支保留在 origin（检出已移除），`doc` 是 guide 文档的唯一维护点。
 > 本地检出于 `.guide/`（`.master` 仓库的 `doc` 分支 worktree）。
 
 ## 目录结构
@@ -27,11 +27,11 @@
 | 名称 | 性质 | 与 `doc` 的关系 |
 |:--|:--|:--|
 | `master` | 代码基线分支 | 互不合并；`doc` 不随代码基线同步（必要时人工评估） |
-| `master-guide` | guide 文档体系（历史分支） | 分支保留在 origin（`eb9af801f5`），本地检出已移除；`doc` 延续其内容并成为唯一维护点 |
+| `master_guide` | guide 文档体系（历史分支，原名 `master-guide`） | 分支保留在 origin（`eb9af801f5`），本地检出已移除；`doc` 延续其内容并成为唯一维护点 |
 | `customer/baizhou_code` / `_team` / `_work` | 定制版本业务分支 | 互不合并；原 `.guide*` 内容已收编至本分支并从主分支移除 |
 | `.worktrees/` | 任务层（AI Agent 临时 Worktree） | 与 `doc` 分支无关 |
 
 ---
 
 创建：2026-10-23。用户拍板：orphan 独立分支 / `master-guide` 版本为 `guide/` 来源。
-同日演进：三定制仓库主分支移除 `.guide*` 文件、`master-guide` 检出移除、`.doc` 检出改名为 `.guide`，本分支成为 guide 文档唯一维护点。
+同日演进：三定制仓库主分支移除 `.guide*` 文件、`master-guide` 检出移除、`.doc` 检出改名为 `.guide`，本分支成为 guide 文档唯一维护点；`master-guide` 改名 `master_guide`（D-005 下划线命名，重推 origin）。
