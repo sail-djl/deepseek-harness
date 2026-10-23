@@ -8,9 +8,9 @@
 
 | 目录/文件 | 定位 | 内容来源 |
 |:--|:--|:--|
-| `guide/` | 通用规范（Git、Worktree、分支管理、Agent 协作、集成流程） | 收编自 `master-guide` 分支 `.guide/.guide/`（49 文件） |
+| `guide/` | 通用规范（Git、Worktree、分支管理、Agent 协作、集成流程） | 收编自 `master-guide` 分支 `.guide/.guide/`（49 文件）；2026-10-23 提取 guide_team 通用文件 6 个（3 个同名升级 + 3 个新增），现 52 文件 |
 | `guide_code/` | code 定制版本的差异与约束 | 收编自 `code/.guide_code/`（7 文件） |
-| `guide_team/` | team 定制版本的差异与约束 | 收编自 `team/.guide_team/`（8 文件） |
+| `guide_team/` | team 定制版本的差异与约束 | 收编自 `team/.guide_team/`（8 文件；2026-10-23 提取 6 个通用文件至 `guide/`，余 2 文件） |
 | `guide_work/` | work 定制版本的差异与约束 | 收编自 `work/.guide_work/`（1 文件） |
 | `README.md` | 文档索引与管理规则 | 本文件 |
 
@@ -21,6 +21,7 @@
 3. **文档与执行文件分离**：本分支文件仅供人与 Agent **查阅**；Agent 实际加载的 `SKILL.md`、脚本、配置等执行文件在各自 skill 仓库，提交到 `doc` 分支不会被自动加载。
 4. **唯一维护点**：首轮以复制方式收编后，各源目录（`code`/`team`/`work` 的 `.guide*`、`master-guide` 检出）已于 2026-10-23 移除，guide 文档只在本分支维护。
 5. **更新流程**：修改 → 提交（`docs(guide): ...`，沿仓库惯例）→ 默认不推送，推送需单独确认。
+6. **非 custom 内容唯一落点 `guide/`**：`guide_*` 定制目录只放本版本专属登记（版本追踪、定制清单、账号登记、机制 README）；通用文档（`1 开始.md`、`本地启动.md`、`.配置.md`、`架构/` 等）一律归 `guide/`。2026-10-23 已提取 guide_team 的 6 个通用文件归位（guide_code / guide_work 逐文件审计后无此类内容）。
 
 ## 与相邻分支/目录的关系
 
@@ -35,3 +36,4 @@
 
 创建：2026-10-23。用户拍板：orphan 独立分支 / `master-guide` 版本为 `guide/` 来源。
 同日演进：三定制仓库主分支移除 `.guide*` 文件、`master-guide` 检出移除、`.doc` 检出改名为 `.guide`，本分支成为 guide 文档唯一维护点；`master-guide` 改名 `master_guide`（D-005 下划线命名，重推 origin）。
+同日（2026-10-23 晚）提取：三个定制目录中的非 custom 内容归位 `guide/`——guide_team 的 `1 开始.md`、`本地启动.md`、`.配置.md`、`架构/前端架构.md`、`架构/后端架构.md`、`resources/说明.md` 共 6 个通用文件迁出（前 3 个同名文件以 team 新版 v0.2.1-alpha.5 覆盖收编旧版 v0.1.1-rc.2）；`guide_code` / `guide_work` 审计后确认无非 custom 内容，保持不动。
