@@ -291,9 +291,30 @@
 
     - id: ui-sidebar-terminal
       name: '@deepseek-ai/dsh-client-ui-sidebar-terminal'
-    # The right Sidebar's workspace file tree tab type.
-    - id: ui-sidebar-files
-      name: '@deepseek-ai/dsh-client-ui-sidebar-files'
+    # The right Sidebar's workspace file tree, replaced by the
+    # dsh-better-sidebar workbench. Its own bundle patch backs off when this
+    # row already mounts the package, so a profile that also installs
+    # dsh-better-sidebar as a bundle still mounts it exactly once.
+    - id: better-sidebar-bundled
+      name: 'dsh-better-sidebar'
+
+    # AgentTeams multi-agent collaboration, bundled as a dependency of this
+    # profile (same pattern as better-sidebar-bundled). The plugin's own bundle
+    # patch backs off when this row already mounts the package.
+    - id: agent-teams-bundled
+      name: '@nanmicoder/dsh-agent-teams'
+      config:
+        stateDir: .agent-teams
+        memberProvider: spawn
+
+    # dsh-hooks lifecycle-hook engine, bundled as a dependency of this bundle.
+    # Unlike better-sidebar-bundled and agent-teams-bundled, the plugin's own
+    # bundle patch inserts the same row id unconditionally, so this row reuses
+    # `dsh-hooks` as its id: a profile that also installs dsh-hooks as a bundle
+    # overrides this row by id instead of mounting a second instance. Hook
+    # definitions stay in the profile's own cordis.patch.yml, never here.
+    - id: dsh-hooks
+      name: 'dsh-hooks'
 
     - id: ui-settings
       name: '@deepseek-ai/dsh-client-ui-settings'

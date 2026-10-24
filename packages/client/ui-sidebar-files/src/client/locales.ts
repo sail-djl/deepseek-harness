@@ -13,7 +13,7 @@ import type {} from '@deepseek-ai/dsh-client-ui-slots'
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface LocaleNamespaceMap {
-    /** File-tree type name, guide entry, row states, and failure lines. */
+    /** File-tree type name, guide entry, row states, row copy actions, and failure lines. */
     sidebarFiles: SidebarFilesKey
   }
 }
@@ -37,6 +37,10 @@ export const zh = {
   'error.outsideWorkspace': '这个目录在工作区之外，侧栏不会读取它。',
   'error.notDirectory': '这不是一个目录。',
   'error.unavailable': '读取失败：{message}',
+  'row.copyAbsolute': '复制绝对路径',
+  'row.copyRelative': '复制相对路径',
+  'toast.copied': '路径已复制',
+  'toast.copyFailed': '复制失败，请检查浏览器剪贴板权限',
 } satisfies Record<string, string>
 
 /** Files dictionary key union. */
@@ -61,6 +65,10 @@ export const en = {
   'error.outsideWorkspace': 'That directory is outside the workspace, so the sidebar will not read it.',
   'error.notDirectory': 'That is not a directory.',
   'error.unavailable': 'Read failed: {message}',
+  'row.copyAbsolute': 'Copy absolute path',
+  'row.copyRelative': 'Copy relative path',
+  'toast.copied': 'Path copied',
+  'toast.copyFailed': 'Could not copy. Check the browser clipboard permissions',
 } satisfies Record<SidebarFilesKey, string>
 
 /** Japanese copy, checked against the English keys. */
@@ -82,6 +90,10 @@ export const ja = {
   'error.outsideWorkspace': 'そのディレクトリはワークスペース外のため、サイドバーでは読み取りません。',
   'error.notDirectory': 'それはディレクトリではありません。',
   'error.unavailable': '読み取りに失敗しました: {message}',
+  'row.copyAbsolute': '絶対パスをコピー',
+  'row.copyRelative': '相対パスをコピー',
+  'toast.copied': 'パスをコピーしました',
+  'toast.copyFailed': 'コピーできませんでした。ブラウザのクリップボード権限を確認してください',
 } satisfies Record<keyof typeof en, string>
 
 /** Spanish dictionary, checked against the English keys. */
@@ -103,6 +115,10 @@ export const es = {
   'error.outsideWorkspace': 'Ese directorio está fuera del espacio de trabajo, por lo que la barra lateral no lo leerá.',
   'error.notDirectory': 'Eso no es un directorio.',
   'error.unavailable': 'Error de lectura: {message}',
+  'row.copyAbsolute': 'Copiar ruta absoluta',
+  'row.copyRelative': 'Copiar ruta relativa',
+  'toast.copied': 'Ruta copiada',
+  'toast.copyFailed': 'No se pudo copiar. Compruebe los permisos del portapapeles del navegador',
 } satisfies Record<keyof typeof en, string>
 
 /** French dictionary, checked against the English keys. */
@@ -124,6 +140,10 @@ export const fr = {
   'error.outsideWorkspace': 'Ce répertoire se trouve en dehors de l’espace de travail, donc la barre latérale ne le lira pas.',
   'error.notDirectory': "Ce n'est pas un répertoire.",
   'error.unavailable': 'Échec de lecture : {message}',
+  'row.copyAbsolute': 'Copier le chemin absolu',
+  'row.copyRelative': 'Copier le chemin relatif',
+  'toast.copied': 'Chemin copié',
+  'toast.copyFailed': 'La copie a échoué. Vérifiez les autorisations du presse-papiers du navigateur',
 } satisfies Record<keyof typeof en, string>
 
 /** German dictionary, checked against the English keys. */
@@ -145,6 +165,10 @@ export const de = {
   'error.outsideWorkspace': 'Dieses Verzeichnis liegt außerhalb des Arbeitsbereichs und wird daher von der Seitenleiste nicht gelesen.',
   'error.notDirectory': 'Das ist kein Verzeichnis.',
   'error.unavailable': 'Lesen fehlgeschlagen: {message}',
+  'row.copyAbsolute': 'Absoluten Pfad kopieren',
+  'row.copyRelative': 'Relativen Pfad kopieren',
+  'toast.copied': 'Pfad kopiert',
+  'toast.copyFailed': 'Kopieren fehlgeschlagen. Prüfen Sie die Zwischenablagen-Berechtigungen des Browsers',
 } satisfies Record<keyof typeof en, string>
 
 /** Russian dictionary, checked against the English keys. */
@@ -166,6 +190,10 @@ export const ru = {
   'error.outsideWorkspace': 'Этот каталог находится за пределами рабочей области, поэтому боковая панель его не читает.',
   'error.notDirectory': 'Это не каталог.',
   'error.unavailable': 'Не удалось прочитать: {message}.',
+  'row.copyAbsolute': 'Скопировать абсолютный путь',
+  'row.copyRelative': 'Скопировать относительный путь',
+  'toast.copied': 'Путь скопирован',
+  'toast.copyFailed': 'Не удалось скопировать. Проверьте разрешения буфера обмена браузера',
 } satisfies Record<keyof typeof en, string>
 
 /** Portuguese dictionary, checked against the English keys. */
@@ -187,4 +215,8 @@ export const pt = {
   'error.outsideWorkspace': 'Esse diretório está fora da área de trabalho, portanto a barra lateral não o lerá.',
   'error.notDirectory': 'Isso não é um diretório.',
   'error.unavailable': 'Falha na leitura: {message}',
+  'row.copyAbsolute': 'Copiar caminho absoluto',
+  'row.copyRelative': 'Copiar caminho relativo',
+  'toast.copied': 'Caminho copiado',
+  'toast.copyFailed': 'Não foi possível copiar. Verifique as permissões da área de transferência do navegador',
 } satisfies Record<keyof typeof en, string>

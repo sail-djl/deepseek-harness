@@ -16,11 +16,14 @@ import { apply, inject } from '../src/client/index.ts'
 import { apply as hostApply } from '../src/index.ts'
 import { FilesBody } from '../src/client/FilesBody.tsx'
 import { FilesTitle } from '../src/client/FilesTitle.tsx'
+import { FilesCopyToast } from '../src/client/CopyToast.tsx'
 import { en, ja, zh, es, fr, de, ru, pt } from '../src/client/locales.ts'
 
 interface Recorded {
   name: string
-  key: string
+  /** Keyed seat registrations carry `key`; overlay entries carry `id`. */
+  key?: string
+  id?: string
   locale: string
   store: unknown
   inject: unknown
@@ -97,12 +100,14 @@ describe('ui-sidebar-files apply', () => {
     expect(dictionaries.get('sidebarFiles')).toEqual({ zh, en, ja, es, fr, de, ru, pt })
     // The seat key is the implementation's id, not the kind: an extension may
     // take the kind over, and the seat must still find this body.
-    expect(registered.map(entry => [entry.name, entry.key, entry.locale, entry.component])).toEqual([
+    expect(registered.map(entry => [entry.name, entry.key ?? entry.id, entry.locale, entry.component])).toEqual([
+      ['shell.overlay', 'files.copy-toast', 'sidebarFiles', FilesCopyToast],
       ['sidebar.right.pane.tab', FILES_ID, 'sidebarFiles', FilesBody],
       ['sidebar.right.pane.tab.title', FILES_ID, undefined, FilesTitle],
     ])
-    expect(registered[0]?.store).toBeDefined()
+    expect(registered[1]?.store).toBeDefined()
     expect(typeof registered[0]?.inject).toBe('function')
+    expect(typeof registered[1]?.inject).toBe('function')
   })
 
   it('takes every registration back when the plugin is disposed', async () => {

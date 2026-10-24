@@ -20,6 +20,7 @@ import { FILES_ID, filesDefinition } from './definition.tsx'
 import { createList, createWatch, filesFace } from './face.ts'
 import { FilesBody } from './FilesBody.tsx'
 import { FilesTitle } from './FilesTitle.tsx'
+import { createCopyToastSource, FilesCopyToast } from './CopyToast.tsx'
 import { en, ja, es, fr, de, ru, pt, zh } from './locales.ts'
 import { createFilesStore } from './store.ts'
 
@@ -82,7 +83,18 @@ export function apply(ctx: ClientContext): void {
   ctx.effect(() => ctx.locale.register(NS, { zh, en, ja, es, fr, de, ru, pt }), 'ui-sidebar-files: dictionaries')
 
   const store = createFilesStore()
-  const inject = filesFace(createList(ctx.remote), createWatch(ctx.remote))
+  // One outcome store behind one `shell.overlay` entry announces every path
+  // copy this package's rows settle, so the outcome outlives the tab the copy
+  // started in.
+  const copyToast = createCopyToastSource()
+  const inject = filesFace(createList(ctx.remote), createWatch(ctx.remote), copyToast.report)
+  ctx.effect(() => ctx.slots.inject('shell.overlay', () => ctx.slots.register(
+    {
+      name: 'shell.overlay', id: 'files.copy-toast', locale: NS,
+      inject: () => ({ hooks: copyToast.hooks, dismiss: copyToast.dismiss }),
+    },
+    FilesCopyToast,
+  )), 'ui-sidebar-files: copy toast')
   ctx.effect(() => ctx.slots.inject('sidebar.right.pane.tab', () => ctx.slots.register(
     {
       name: 'sidebar.right.pane.tab', key: FILES_ID, locale: NS, store, inject,

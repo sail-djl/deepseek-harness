@@ -32,12 +32,26 @@ export function resolveDesktopBuildTarget(
 ): DesktopAutoUpdateTarget
 
 /**
+ * Derive the directory suffix that separates one brand's artifact output from the default build.
+ * The suffix is the brand directory's own name, so a `resources/brands/baizhou` build writes
+ * `unsigned-artifacts-baizhou` beside the unbranded `unsigned-artifacts`.
+ * @param env - Packaging environment.
+ * @returns `-<brand directory name>` when a brand directory is set, otherwise an empty string.
+ */
+export function resolveDesktopBrandSuffix(env?: NodeJS.ProcessEnv): string
+
+/**
  * Return the mutable preparation and artifact directories owned by one release target.
  * @param target - Supported Desktop target name.
  * @param environment - Packaging environment with an optional absolute cache directory.
+ * @param brandSuffix - Directory suffix from `resolveDesktopBrandSuffix` for branded artifact output.
  * @returns Target paths plus shared download and package caches.
  */
-export function desktopTargetBuildPaths(target: DesktopAutoUpdateTarget, environment?: NodeJS.ProcessEnv): DesktopTargetBuildPaths
+export function desktopTargetBuildPaths(
+  target: DesktopAutoUpdateTarget,
+  environment?: NodeJS.ProcessEnv,
+  brandSuffix?: string,
+): DesktopTargetBuildPaths
 
 /**
  * Return the platform and architecture of the payload one release target prepares.

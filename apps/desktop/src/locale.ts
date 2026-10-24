@@ -31,17 +31,17 @@ export const en = {
   application: 'Application',
   fileMenu: 'File',
   closePage: 'Close Page or Window',
-  aboutMenu: 'About DeepSeek Harness',
-  aboutProduct: 'DeepSeek Harness',
+  aboutMenu: 'About {brand}',
+  aboutProduct: '{brand}',
   aboutVersion: 'Version V{version}',
-  hideApplication: 'Hide DeepSeek Harness',
+  hideApplication: 'Hide {brand}',
   hideOtherApplications: 'Hide Others',
   showAllApplications: 'Show All',
-  quitApplication: 'Quit DeepSeek Harness',
-  openApplication: 'Open DeepSeek Harness',
+  quitApplication: 'Quit {brand}',
+  openApplication: 'Open {brand}',
   quit: 'Quit',
   cancel: 'Cancel',
-  quitTitle: 'Quit DeepSeek Harness?',
+  quitTitle: 'Quit {brand}?',
   quitActiveTasks: 'Running tasks will be interrupted.',
   quitScheduledTasks: 'Scheduled tasks will not run while the app is closed.',
   quitActiveAndScheduledTasks: 'Running tasks will be interrupted, and scheduled tasks will not run while the app is closed.',
@@ -56,7 +56,7 @@ export const en = {
   copy: 'Copy',
   paste: 'Paste',
   selectAll: 'Select All',
-  startupFailed: 'DeepSeek Harness is unavailable',
+  startupFailed: '{brand} is unavailable',
   fatalSummary: 'The application could not start or stopped unexpectedly.',
   startupAddressInUse: 'Another DSH instance (such as dsh web or the desktop app) is running. They cannot start at the same time. Quit the other running DSH instance, then restart.',
   diagnosticTruncated: '… Error details shortened.',
@@ -66,10 +66,10 @@ export const en = {
   restartApplication: 'Restart',
   recoveryOperationFailed: 'The recovery operation failed',
   disableThirdPartyPlugins: 'Disable third-party plugins, back up profile patch, and restart',
-  welcomeTitle: 'DeepSeek Harness',
-  welcomeBrand: 'DeepSeek Harness',
+  welcomeTitle: '{brand}',
+  welcomeBrand: '{brand}',
   welcomeTaglineBefore: 'Welcome to ',
-  welcomeTaglineBrand: 'DeepSeek Harness',
+  welcomeTaglineBrand: '{brand}',
   welcomeTaglineAfter: '',
   welcomeDescription: 'Build potential. Explore intelligence.',
   welcomeAuthStarting: 'Opening sign in…',
@@ -131,7 +131,7 @@ export const en = {
   updateFullscreenTimeout: 'Could not exit fullscreen. Exit fullscreen, then retry the update.',
   updateStopFailed: 'Could not safely stop the tasks. The update has not been installed. Please try again later.',
   updateTechnicalDetails: 'View technical details',
-  updateTitle: 'DeepSeek Harness Update',
+  updateTitle: '{brand} Update',
   updateAvailable: 'New version available: {version}',
   updateDetail: 'Once the download is complete, you can install the update and restart the app.',
   installAndRestart: 'Install and Restart',
@@ -205,17 +205,17 @@ export const zh = {
   application: '应用',
   fileMenu: '文件',
   closePage: '关闭页面或窗口',
-  aboutMenu: '关于 DeepSeek Harness',
-  aboutProduct: 'DeepSeek Harness',
+  aboutMenu: '关于 {brand}',
+  aboutProduct: '{brand}',
   aboutVersion: '版本 V{version}',
-  hideApplication: '隐藏 DeepSeek Harness',
+  hideApplication: '隐藏 {brand}',
   hideOtherApplications: '隐藏其他',
   showAllApplications: '显示全部',
-  quitApplication: '退出 DeepSeek Harness',
-  openApplication: '打开 DeepSeek Harness',
+  quitApplication: '退出 {brand}',
+  openApplication: '打开 {brand}',
   quit: '退出',
   cancel: '取消',
-  quitTitle: '退出 DeepSeek Harness？',
+  quitTitle: '退出 {brand}？',
   quitActiveTasks: '当前正在运行的任务将会中断',
   quitScheduledTasks: '应用关闭期间，定时任务不会运行',
   quitActiveAndScheduledTasks: '当前正在运行的任务将会中断，且应用关闭期间，定时任务不会运行',
@@ -230,7 +230,7 @@ export const zh = {
   copy: '复制',
   paste: '粘贴',
   selectAll: '全选',
-  startupFailed: 'DeepSeek Harness 无法使用',
+  startupFailed: '{brand} 无法使用',
   fatalSummary: '应用无法启动或已意外停止。',
   startupAddressInUse: '有其他正在运行的 DSH（如其他 dsh web、桌面端），无法同时启动，请退出其他正在运行的 DSH 后重启。',
   diagnosticTruncated: '… 错误详情已截短。',
@@ -240,10 +240,10 @@ export const zh = {
   restartApplication: '重启',
   recoveryOperationFailed: '恢复操作失败',
   disableThirdPartyPlugins: '禁用第三方插件、备份 profile patch 并重启',
-  welcomeTitle: 'DeepSeek Harness',
-  welcomeBrand: 'DeepSeek Harness',
+  welcomeTitle: '{brand}',
+  welcomeBrand: '{brand}',
   welcomeTaglineBefore: '欢迎使用 ',
-  welcomeTaglineBrand: 'DeepSeek Harness',
+  welcomeTaglineBrand: '{brand}',
   welcomeTaglineAfter: '',
   welcomeDescription: '组装无限可能，共探智能上限',
   welcomeAuthStarting: '正在打开登录…',
@@ -305,7 +305,7 @@ export const zh = {
   updateFullscreenTimeout: '无法退出全屏，请退出全屏后重试更新',
   updateStopFailed: '未能安全停止任务，更新尚未安装，请稍后重试。',
   updateTechnicalDetails: '查看技术详情',
-  updateTitle: 'DeepSeek Harness 更新',
+  updateTitle: '{brand} 更新',
   updateAvailable: '发现新版本 {version}',
   updateDetail: '下载完成后，可安装并重启应用。',
   installAndRestart: '安装并重启',
@@ -1385,30 +1385,50 @@ export interface DesktopLocale {
   readonly messages: DesktopMessages
 }
 
-/** Resolve Electron's locale to one shipped Desktop dictionary. */
-export function resolveDesktopLocale(locale: string): DesktopLocale {
+/** Brand substituted into `{brand}` placeholders when packaging injects no product name. */
+export const DEFAULT_DESKTOP_BRAND = 'DeepSeek Harness'
+
+/**
+ * Apply a product brand to every `{brand}` placeholder in one dictionary.
+ * @param messages - shell dictionary carrying `{brand}` placeholders.
+ * @param brand - display product name for this launch.
+ * @returns a dictionary with every `{brand}` placeholder replaced.
+ */
+export function desktopMessages(messages: DesktopMessages, brand: string): DesktopMessages {
+  const entries = Object.entries(messages).map(([key, value]) =>
+    [key, value.includes('{brand}') ? value.replaceAll('{brand}', brand) : value] as const)
+  return Object.fromEntries(entries) as DesktopMessages
+}
+
+/** Resolve Electron's locale to one shipped Desktop dictionary with `{brand}` placeholders replaced. */
+export function resolveDesktopLocale(locale: string, brand: string = DEFAULT_DESKTOP_BRAND): DesktopLocale {
   const primary = locale.toLowerCase().split('-')[0]
   if (primary !== undefined && Object.hasOwn(dictionaries, primary)) {
     const id = primary as keyof typeof dictionaries
-    return { id: id === 'zh' ? 'zh-CN' : id, messages: dictionaries[id] }
+    return { id: id === 'zh' ? 'zh-CN' : id, messages: desktopMessages(dictionaries[id], brand) }
   }
-  return { id: 'en', messages: en }
+  return { id: 'en', messages: desktopMessages(en, brand) }
 }
 
 /**
  * Choose a built-in dictionary from the shared preference, then ordered OS languages.
  * @param preference - explicit locale.preference, or null when no language was selected.
  * @param languages - operating-system languages in preference order.
+ * @param brand - display product name filling `{brand}` placeholders.
  * @returns the supported dictionary, falling back to English.
  */
-export function resolveDesktopStartupLocale(preference: string | null, languages: readonly string[]): DesktopLocale {
+export function resolveDesktopStartupLocale(
+  preference: string | null,
+  languages: readonly string[],
+  brand: string = DEFAULT_DESKTOP_BRAND,
+): DesktopLocale {
   const selected = preference?.toLowerCase()
-  if (selected !== undefined && Object.hasOwn(dictionaries, selected)) return resolveDesktopLocale(selected)
+  if (selected !== undefined && Object.hasOwn(dictionaries, selected)) return resolveDesktopLocale(selected, brand)
   for (const language of languages) {
     const primary = language.toLowerCase().split('-')[0]
-    if (primary !== undefined && Object.hasOwn(dictionaries, primary)) return resolveDesktopLocale(primary)
+    if (primary !== undefined && Object.hasOwn(dictionaries, primary)) return resolveDesktopLocale(primary, brand)
   }
-  return resolveDesktopLocale('en')
+  return resolveDesktopLocale('en', brand)
 }
 
 /** Replace named placeholders in one locale-owned message. */

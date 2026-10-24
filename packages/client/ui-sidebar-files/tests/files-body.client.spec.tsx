@@ -5,7 +5,7 @@ import { act, cleanup, fireEvent } from '@testing-library/react'
 import { makeTranslate, RemoteError } from '@deepseek-ai/dsh-client-test-runtime'
 import type { RemoteFailure } from '@deepseek-ai/dsh-api-remotes/client'
 import { fileAddressFor } from '@deepseek-ai/dsh-util-workspace-path'
-import { failureLine, orderEntries } from '../src/client/FilesBody.tsx'
+import { failureLine, orderEntries, relativePath } from '../src/client/FilesBody.tsx'
 import type { DirLevel } from '../src/client/store.ts'
 import { zh } from '../src/client/locales.ts'
 import { mountBody, ROOT, SESSION, TAB } from './mount.client.tsx'
@@ -21,6 +21,19 @@ const ROOT_LEVEL: DirLevel = {
 }
 
 afterEach(() => { cleanup() })
+
+/** Install the async browser clipboard and restore its prior host shape. */
+function installClipboard(writeText: (text: string) => Promise<void>): () => void {
+  const prior = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
+  Object.defineProperty(navigator, 'clipboard', {
+    configurable: true,
+    value: { writeText },
+  })
+  return () => {
+    if (prior === undefined) Reflect.deleteProperty(navigator, 'clipboard')
+    else Object.defineProperty(navigator, 'clipboard', prior)
+  }
+}
 
 /** Row labels in document order. */
 function names(root: HTMLElement): string[] {
@@ -289,6 +302,74 @@ describe('FilesBody', () => {
     expect(view.container.querySelector('[data-files-state="tree"]')).toBeNull()
     expect(script.list).toHaveBeenCalledTimes(1)
   })
+
+  it('a right-click on a row offers both path copies and copies the absolute path', async () => {
+    const { view, script, reportCopy } = mountBody()
+    await act(() => script.watches.ready(ROOT))
+    await act(() => script.settle({ ok: true, value: ROOT_LEVEL }))
+    const writeText = vi.fn(async () => {})
+    const restore = installClipboard(writeText)
+    try {
+      fireEvent.contextMenu(view.container.querySelector(`[data-files-path="${ROOT}/README.md"]`)!, { clientX: 24, clientY: 40 })
+      const items = view.getAllByRole('menuitem')
+      expect(items.map(item => item.textContent)).toEqual([zh['row.copyAbsolute'], zh['row.copyRelative']])
+      fireEvent.click(items[0]!)
+      await vi.waitFor(() => { expect(writeText).toHaveBeenCalledWith(`${ROOT}/README.md`) })
+      expect(reportCopy).toHaveBeenCalledWith('copied')
+      expect(view.queryByRole('menu')).toBeNull()
+    } finally { restore() }
+  })
+
+  it('a directory right-click copies the path relative to the tree root', async () => {
+    const { view, script, reportCopy } = mountBody()
+    await act(() => script.watches.ready(ROOT))
+    await act(() => script.settle({ ok: true, value: ROOT_LEVEL }))
+    const writeText = vi.fn(async () => {})
+    const restore = installClipboard(writeText)
+    try {
+      fireEvent.contextMenu(view.container.querySelector(`[data-files-path="${ROOT}/src"]`)!)
+      fireEvent.click(view.getByRole('menuitem', { name: zh['row.copyRelative'] }))
+      await vi.waitFor(() => { expect(writeText).toHaveBeenCalledWith('src') })
+      expect(reportCopy).toHaveBeenCalledWith('copied')
+    } finally { restore() }
+  })
+
+  it('a nested file right-click copies its path under the root, and a refused write reports a failure', async () => {
+    const { view, script, reportCopy } = mountBody()
+    await act(() => script.watches.ready(ROOT))
+    await act(() => script.settle({ ok: true, value: ROOT_LEVEL }))
+    act(() => { fireEvent.click(view.container.querySelector(`[data-files-path="${ROOT}/src"] > button`)!) })
+    await act(() => script.watches.ready(`${ROOT}/src`))
+    await act(() => script.settle({ ok: true, value: { entries: [{ name: 'a.ts', type: 'file' }], truncated: false } }))
+    const writeText = vi.fn(async () => { throw new Error('denied') })
+    const restore = installClipboard(writeText)
+    try {
+      fireEvent.contextMenu(view.container.querySelector(`[data-files-path="${ROOT}/src/a.ts"]`)!)
+      fireEvent.click(view.getByRole('menuitem', { name: zh['row.copyRelative'] }))
+      await vi.waitFor(() => { expect(writeText).toHaveBeenCalledWith('src/a.ts') })
+      await vi.waitFor(() => { expect(reportCopy).toHaveBeenCalledWith('copyFailed') })
+    } finally { restore() }
+  })
+
+  it('a non-file entry offers the same copies, and a press outside the menu closes it', async () => {
+    const { view, script, reportCopy } = mountBody()
+    await act(() => script.watches.ready(ROOT))
+    await act(() => script.settle({ ok: true, value: ROOT_LEVEL }))
+    const writeText = vi.fn(async () => {})
+    const restore = installClipboard(writeText)
+    try {
+      fireEvent.contextMenu(view.container.querySelector(`[data-files-path="${ROOT}/pipe"]`)!)
+      expect(view.getAllByRole('menuitem')).toHaveLength(2)
+      fireEvent.pointerDown(document.body)
+      expect(view.queryByRole('menu')).toBeNull()
+      expect(reportCopy).not.toHaveBeenCalled()
+
+      fireEvent.contextMenu(view.container.querySelector(`[data-files-path="${ROOT}/pipe"]`)!)
+      fireEvent.keyDown(document, { key: 'Escape' })
+      expect(view.queryByRole('menu')).toBeNull()
+      expect(writeText).not.toHaveBeenCalled()
+    } finally { restore() }
+  })
 })
 
 describe('orderEntries', () => {
@@ -325,5 +406,21 @@ describe('failureLine', () => {
   it('carries an unclassified failure\'s own message', () => {
     const failure = { code: 'remote/transport', message: 'socket closed' } as unknown as RemoteFailure
     expect(failureLine(t, failure)).toBe('读取失败：socket closed')
+  })
+})
+
+describe('relativePath', () => {
+  it('strips the root prefix and the separator joining it to the row', () => {
+    expect(relativePath('/work/app', '/work/app/README.md')).toBe('README.md')
+    expect(relativePath('/work/app', '/work/app/src/a.ts')).toBe('src/a.ts')
+  })
+
+  it('tolerates a trailing separator on the root, POSIX or Windows', () => {
+    expect(relativePath('/work/app/', '/work/app/src')).toBe('src')
+    expect(relativePath('C:\\work\\app\\', 'C:\\work\\app/src')).toBe('src')
+  })
+
+  it('leaves a path outside the root unchanged', () => {
+    expect(relativePath('/work/app', '/etc/hosts')).toBe('/etc/hosts')
   })
 })

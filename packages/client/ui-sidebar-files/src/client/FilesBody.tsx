@@ -3,13 +3,15 @@
  *
  * Everything the tree keeps lives in its store, keyed by tab; everything it asks
  * for goes through its injected face. The component itself only decides what to
- * draw for each absolute path and what a click means: a directory toggles, a
- * file opens through the owner's `tabActions` for a `file:` viewer to claim, and
- * anything else is shown but refuses to open. The header uses the shared
- * PathLabel for the root, followed by reload and workspace directory actions.
+ * draw for each absolute path and what a click means: a directory toggles,
+ * a file opens through the owner's `tabActions` for a `file:` viewer to claim,
+ * and anything else is shown but refuses to open. A right-click on any row
+ * offers the path copy actions, whose settled clipboard result reports to the
+ * app-wide toast. The header uses the shared PathLabel for the root, followed
+ * by reload and workspace directory actions.
  */
-import { useEffect, useLayoutEffect, useRef } from 'react'
-import type { ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import clsx from 'clsx'
 import type { RemoteFailure } from '@deepseek-ai/dsh-api-remotes/client'
 import type {
@@ -17,7 +19,7 @@ import type {
 } from '@deepseek-ai/dsh-client-ui-slots'
 import {
   FileTypeIcon, IconFolderCloseRegular, IconFolderOpenRegular, IconRefreshOutlineRegular, Tooltip, classifyFileType,
-  IconPauseOutlineRegular, IconPlayOutlineRegular, PathLabel,
+  IconPauseOutlineRegular, IconPlayOutlineRegular, PathLabel, Menu, writeClipboard,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import { fileAddressFor } from '@deepseek-ai/dsh-util-workspace-path'
 import type { WorkspaceDirectoryEntry } from '@deepseek-ai/dsh-api-workspace-files/types'
@@ -69,11 +71,24 @@ export function failureLine(t: TranslateNS<'sidebarFiles'>, failure: RemoteFailu
   }
 }
 
-/** What every level shares: the tab's tree and the two gestures. */
+/**
+ * One row's path relative to the tree's root.
+ * @param root - absolute path of the tree root.
+ * @param path - absolute path of a row; every row sits under the root.
+ * @returns the row's path with the root prefix and its separator removed, or
+ * the absolute path unchanged when it is not under the root.
+ */
+export function relativePath(root: string, path: string): string {
+  const base = root.replace(/[/\\]+$/, '')
+  return path.startsWith(base) ? path.slice(base.length).replace(/^[/\\]+/, '') : path
+}
+
+/** What every level shares: the tab's tree and the three gestures. */
 interface TreeContext {
   readonly state: FilesTabState
   readonly onToggle: (parent: string, path: string) => void
   readonly onOpen: (path: string) => void
+  readonly onContextMenu: (path: string, event: ReactMouseEvent<HTMLLIElement>) => void
   readonly t: TranslateNS<'sidebarFiles'>
 }
 
@@ -83,7 +98,8 @@ function Entry({ parent, entry, tree }: { parent: string; entry: WorkspaceDirect
   if (entry.type === 'directory') {
     const expanded = tree.state.expanded.includes(path)
     return (
-      <li className={css.item} data-files-entry="directory" data-files-path={path}>
+      <li className={css.item} data-files-entry="directory" data-files-path={path}
+        onContextMenu={(event) => { tree.onContextMenu(path, event) }}>
         <button type="button" className={css.row} aria-expanded={expanded} onClick={() => { tree.onToggle(parent, path) }}>
           {expanded ? <IconFolderOpenRegular className={css.icon} /> : <IconFolderCloseRegular className={css.icon} />}
           <span className={css.name}>{entry.name}</span>
@@ -94,7 +110,8 @@ function Entry({ parent, entry, tree }: { parent: string; entry: WorkspaceDirect
   }
   if (entry.type === 'file') {
     return (
-      <li className={css.item} data-files-entry="file" data-files-path={path}>
+      <li className={css.item} data-files-entry="file" data-files-path={path}
+        onContextMenu={(event) => { tree.onContextMenu(path, event) }}>
         <button type="button" className={css.row} onClick={() => { tree.onOpen(path) }}>
           <FileTypeIcon kind={classifyFileType(entry.name)} size={16} className={css.fileIcon} />
           <span className={css.name}>{entry.name}</span>
@@ -103,7 +120,8 @@ function Entry({ parent, entry, tree }: { parent: string; entry: WorkspaceDirect
     )
   }
   return (
-    <li className={css.item} data-files-entry="other" data-files-path={path}>
+    <li className={css.item} data-files-entry="other" data-files-path={path}
+      onContextMenu={(event) => { tree.onContextMenu(path, event) }}>
       <span className={clsx(css.row, css.other)} aria-disabled="true" title={tree.t('entry.other')}>
         <span className={css.name}>{entry.name}</span>
       </span>
@@ -139,13 +157,15 @@ function Level({ path, tree }: { path: string; tree: TreeContext }): ReactNode {
 /** The file tree's body: the workspace root and whatever the reader has opened under it. */
 export function FilesBody({
   useTabInfo, sessionId, useSessions, useStore, actions,
-  start, refresh, setAutoRefresh, toggle, t, renderSlot,
+  start, refresh, setAutoRefresh, toggle, reportCopy, t, renderSlot,
 }: FilesBodyProps): ReactNode {
   const { tab } = useTabInfo()
   useEffect(() => tab.actions.bindCommands({ refresh: () => { refresh(tab.id) } }), [tab.actions, tab.id, refresh])
   const { signal, actions: tabActions } = tab
   const cwd = useSessions(sessions => sessions.byId[sessionId]?.cwd)
   const state = useStore(store => store.byTab[tab.id])
+  /** The right-clicked row's path and cursor point, or null while no menu shows. */
+  const [menu, setMenu] = useState<{ path: string; x: number; y: number } | null>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
   const scrollTopRef = useRef(0)
   // Come back where the reader was: loaded levels outlive the body in the
@@ -185,6 +205,10 @@ export function FilesBody({
     onToggle: (parent, path) => { toggle(tab.id, parent, path, state.expanded, signal) },
     // Every row is under the tree's root, so its address is session-relative.
     onOpen: (path) => { tabActions.openResource(fileAddressFor(sessionId, state.root, path)) },
+    onContextMenu: (path, event) => {
+      event.preventDefault()
+      setMenu({ path, x: event.clientX, y: event.clientY })
+    },
     t,
   }
   const reload = (): void => {
@@ -226,6 +250,28 @@ export function FilesBody({
       >
         <ul className={css.level}><Level path={state.root} tree={tree} /></ul>
       </div>
+      {/* Mounted only while a row is right-clicked: the list opens at the
+          cursor, closes on selection, outside press, or Escape, and reports
+          its settled clipboard write to the app-wide toast. */}
+      {menu !== null && (
+        <Menu
+          open
+          autoFocus
+          portal
+          anchor={<span aria-hidden="true" />}
+          items={[
+            { id: 'absolute', label: t('row.copyAbsolute') },
+            { id: 'relative', label: t('row.copyRelative') },
+          ]}
+          getAnchorRect={() => new DOMRect(menu.x, menu.y, 0, 0)}
+          onSelect={(id) => {
+            setMenu(null)
+            const text = id === 'relative' ? relativePath(state.root, menu.path) : menu.path
+            void writeClipboard(text).then((ok) => { reportCopy(ok ? 'copied' : 'copyFailed') })
+          }}
+          onClose={() => { setMenu(null) }}
+        />
+      )}
     </div>
   )
 }

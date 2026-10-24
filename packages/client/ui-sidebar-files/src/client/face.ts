@@ -26,6 +26,7 @@ import type { DirLevel, createFilesStore } from './store.ts'
 import type { WorkspaceFileWatchFrame } from '@deepseek-ai/dsh-api-workspace-files/types'
 import { RemoteError } from '@deepseek-ai/dsh-typert-protocol'
 import { DirectoryNode } from './directory-node.ts'
+import type { CopyOutcome } from './CopyToast.tsx'
 
 /**
  * Observe one directory without recursively watching its descendants.
@@ -141,17 +142,24 @@ export interface FilesInjected {
    * @param signal - the tab record's lifetime.
    */
   readonly toggle: (tabId: TabId, parentPath: string, path: string, expanded: readonly string[], signal: AbortSignal) => void
+  /**
+   * Report one settled path-copy outcome to the app-wide toast.
+   * @param outcome - settled clipboard result of one path copy.
+   */
+  readonly reportCopy: (outcome: CopyOutcome) => void
 }
 
 /**
  * Bind the tree's face to one directory listing.
  * @param list - the bound `workspaceFiles.list` call.
  * @param watch - target-scoped directory observation.
+ * @param reportCopy - outcome reporter for the app-wide copy toast.
  * @returns the Slot `inject` factory: session and bound actions in, face out.
  */
 export function filesFace(
   list: ListWorkspaceDirectory,
   watch: WatchWorkspaceDirectory,
+  reportCopy: (outcome: CopyOutcome) => void,
 ): (sessionId: SessionId, actions: BoundActions<ReturnType<typeof createFilesStore>>) => FilesInjected {
   return (
     sessionId: SessionId,
@@ -216,6 +224,7 @@ export function filesFace(
         else parent?.expand(path, next)
         actions.toggled(tabId, path)
       },
+      reportCopy,
     }
   }
 }

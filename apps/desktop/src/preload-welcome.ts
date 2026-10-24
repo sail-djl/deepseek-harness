@@ -2,14 +2,17 @@ import type { AccountView, SignInAttemptId } from '@deepseek-ai/dsh-deepseek-acc
 /** Localized welcome copy and write-only credential actions. */
 
 import { contextBridge, ipcRenderer } from 'electron'
-import { resolveDesktopLocale } from './locale.ts'
+import { DEFAULT_DESKTOP_BRAND, resolveDesktopLocale } from './locale.ts'
 import { WELCOME_IPC, type WelcomeApi, type WelcomeNotice, type WelcomeSaveResult } from './welcome-api.ts'
 
 const prefix = '--dsh-welcome-locale='
 const locale = process.argv.find(argument => argument.startsWith(prefix))?.slice(prefix.length)
 if (locale === undefined) throw new Error('desktop welcome: missing window locale')
+const brandPrefix = '--dsh-welcome-brand='
+// Optional: preload invocation without window arguments keeps the official product name.
+const brand = process.argv.find(argument => argument.startsWith(brandPrefix))?.slice(brandPrefix.length) ?? DEFAULT_DESKTOP_BRAND
 const api: WelcomeApi = {
-  ...resolveDesktopLocale(locale),
+  ...resolveDesktopLocale(locale, brand),
   analytics: async (eventName, attributes) => {
     if (await api.analyticsEnabled()) await ipcRenderer.invoke(WELCOME_IPC.analytics, eventName, attributes)
   },

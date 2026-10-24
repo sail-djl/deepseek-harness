@@ -4,6 +4,7 @@ import {
   desktopTargetBuildPaths,
   desktopTargetPlatform,
   developmentRuntimeDirectory,
+  resolveDesktopBrandSuffix,
   resolveDesktopBuildTarget,
   resolveDesktopTargetBuildPaths,
 } from '../scripts/desktop-build-paths.mjs'
@@ -64,6 +65,17 @@ describe('desktop build paths', () => {
   it.each(['', ' ', 'relative/cache', './cache', 'cache\0invalid'])('rejects invalid cache directory %j', (directory) => {
     expect(() => desktopTargetBuildPaths('win-x64', { DSH_DESKTOP_PACKAGE_CACHE_DIR: directory }))
       .toThrow('DSH_DESKTOP_PACKAGE_CACHE_DIR')
+  })
+
+  it('separates branded artifact output by the brand directory name', () => {
+    expect(resolveDesktopBrandSuffix({ DSH_DESKTOP_BRAND_DIR: join(sep, 'brands', 'baizhou') })).toBe('-baizhou')
+    expect(resolveDesktopBrandSuffix({ DSH_DESKTOP_BRAND_DIR: '  ' })).toBe('')
+    expect(resolveDesktopBrandSuffix({})).toBe('')
+    const branded = resolveDesktopTargetBuildPaths({ DSH_DESKTOP_BRAND_DIR: join(sep, 'brands', 'baizhou') }, 'win32', 'x64')
+    expect(branded.unsignedArtifacts).toContain(join('targets', 'win-x64', 'unsigned-artifacts-baizhou'))
+    expect(branded.dsh).toContain(join('targets', 'win-x64', 'dsh'))
+    const plain = resolveDesktopTargetBuildPaths({}, 'win32', 'x64')
+    expect(plain.unsignedArtifacts).toContain(join('targets', 'win-x64', 'unsigned-artifacts'))
   })
 
   it('resolves the development primary runtime from the build target rather than the host architecture', () => {
