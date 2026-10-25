@@ -1,6 +1,6 @@
 import type { DesktopAutoUpdateTarget } from './desktop-auto-update-environment.mjs'
 
-/** Mutable target directories plus the shared immutable download cache. */
+/** Mutable target directories plus shared download and package caches. */
 export interface DesktopTargetBuildPaths {
   readonly root: string
   readonly artifacts: string
@@ -15,6 +15,7 @@ export interface DesktopTargetBuildPaths {
   readonly packedVendor: string
   readonly packedLandlock: string
   readonly downloads: string
+  readonly pnpmStore: string
 }
 
 /**
@@ -42,13 +43,10 @@ export function resolveDesktopBrandSuffix(env?: NodeJS.ProcessEnv): string
 /**
  * Return the mutable preparation and artifact directories owned by one release target.
  * @param target - Supported Desktop target name.
- * @param brandSuffix - Directory suffix from `resolveDesktopBrandSuffix` for branded artifact output.
- * @returns Target paths plus the shared immutable download cache.
+ * @param environment - Packaging environment with an optional absolute cache directory.
+ * @returns Target paths plus shared download and package caches.
  */
-export function desktopTargetBuildPaths(
-  target: DesktopAutoUpdateTarget,
-  brandSuffix?: string,
-): DesktopTargetBuildPaths
+export function desktopTargetBuildPaths(target: DesktopAutoUpdateTarget, environment?: NodeJS.ProcessEnv): DesktopTargetBuildPaths
 
 /**
  * Return the platform and architecture of the payload one release target prepares.
