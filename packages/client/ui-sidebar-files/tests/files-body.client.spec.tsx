@@ -315,7 +315,7 @@ describe('FilesBody', () => {
       expect(items.map(item => item.textContent)).toEqual([zh['row.copyAbsolute'], zh['row.copyRelative']])
       fireEvent.click(items[0]!)
       await vi.waitFor(() => { expect(writeText).toHaveBeenCalledWith(`${ROOT}/README.md`) })
-      expect(reportCopy).toHaveBeenCalledWith('copied')
+      await vi.waitFor(() => { expect(reportCopy).toHaveBeenCalledWith('copied') })
       expect(view.queryByRole('menu')).toBeNull()
     } finally { restore() }
   })
@@ -330,7 +330,7 @@ describe('FilesBody', () => {
       fireEvent.contextMenu(view.container.querySelector(`[data-files-path="${ROOT}/src"]`)!)
       fireEvent.click(view.getByRole('menuitem', { name: zh['row.copyRelative'] }))
       await vi.waitFor(() => { expect(writeText).toHaveBeenCalledWith('src') })
-      expect(reportCopy).toHaveBeenCalledWith('copied')
+      await vi.waitFor(() => { expect(reportCopy).toHaveBeenCalledWith('copied') })
     } finally { restore() }
   })
 

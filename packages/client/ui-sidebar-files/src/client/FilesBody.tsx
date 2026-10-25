@@ -206,7 +206,10 @@ export function FilesBody({
     // Every row is under the tree's root, so its address is session-relative.
     onOpen: (path) => { tabActions.openResource(fileAddressFor(sessionId, state.root, path)) },
     onContextMenu: (path, event) => {
+      // A nested row's menu is its own: the event also bubbles through every
+      // ancestor directory row, and the last write would win.
       event.preventDefault()
+      event.stopPropagation()
       setMenu({ path, x: event.clientX, y: event.clientY })
     },
     t,
