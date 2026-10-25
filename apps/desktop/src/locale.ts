@@ -1409,7 +1409,6 @@ export function resolveDesktopLocale(locale: string, brand: string = DEFAULT_DES
   }
   return { id: 'en', messages: desktopMessages(en, brand) }
 }
-}
 
 /**
  * Choose a built-in dictionary from the shared preference, then ordered OS languages.
