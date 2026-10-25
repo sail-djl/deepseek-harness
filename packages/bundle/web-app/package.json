@@ -183,6 +183,7 @@
     "commander": "^15.0.0",
     "dsh-better-sidebar": "0.26.0",
     "dsh-mcp-manage": "file:./vendor/dsh-mcp-manage-0.2.0-local.1.tgz",
+    "dsh-univer-office": "0.3.7",
     "open": "^11.0.2",
     "@deepseek-ai/dsh-api-account-controller": "workspace:*",
     "@deepseek-ai/dsh-client-ui-settings-account": "workspace:*",
