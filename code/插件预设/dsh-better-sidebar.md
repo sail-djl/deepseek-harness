@@ -7,9 +7,11 @@
 
 | 文件 | 改动 |
 | :-- | :-- |
-| `packages/bundle/web-app/package.json` | 新增依赖 `dsh-better-sidebar: 0.26.0`；移除依赖 `@deepseek-ai/dsh-client-ui-sidebar-files`；新增依赖 `@deepseek-ai/dsh-mcp-client`（支撑 agent 预设里的 MCP） |
-| `packages/bundle/web-app/cordis.patch.yml` | 把 `- id: ui-sidebar-files / name: '@deepseek-ai/dsh-client-ui-sidebar-files'` 一行替换为 `- id: better-sidebar-bundled / name: 'dsh-better-sidebar'`（第 301–302 行） |
+| `packages/bundle/web-app/package.json` | 新增依赖 `dsh-better-sidebar: 0.26.0`；移除依赖 `@deepseek-ai/dsh-client-ui-sidebar-files`；新增依赖 `@deepseek-ai/dsh-mcp-client`（支撑 agent 预设里的 MCP；该接入已拆出独立文档 [`dsh-mcp-client.md`](dsh-mcp-client.md)） |
+| `packages/bundle/web-app/cordis.patch.yml` | 把 `- id: ui-sidebar-files / name: '@deepseek-ai/dsh-client-ui-sidebar-files'` 一行替换为 `- id: better-sidebar-bundled / name: 'dsh-better-sidebar'`（第 306–307 行） |
 | `patches/dsh-better-sidebar@0.26.0.patch` | pnpm 补丁（约 7.7 KB），把插件的服务注入 `webRuntime` → `webStartup`（适配新版 DSH 的 trustedHosts API 迁移） |
+| `pnpm-workspace.yaml` | `patchedDependencies` 注册 `dsh-better-sidebar@0.26.0: patches/dsh-better-sidebar@0.26.0.patch`；`minimumReleaseAgeExclude` 放行 `dsh-better-sidebar@0.26.0` |
+| `apps/desktop/scripts/runtime-patch-policy.ts` | 白名单登记 `dsh-better-sidebar@0.26.0`，`scope: shared`（插件随 web-app bundled 分发到桌面端运行时，非仅构建机） |
 
 ## 挂载语义
 
@@ -21,8 +23,8 @@
 
 ## git 状态
 
-依赖 + 配置 + pnpm 补丁均为未跟踪（`??`）/ 未暂存（` M`）。
+已提交：`0c22e47018` / `acc18c8f0b`（登记见 `../.version.yaml` customizations）。2026-10-23 复核 code 快照工作区干净；原「未跟踪 / 未暂存」状态已过期。
 
 ## 升级注意
 
-升级 `dsh-better-sidebar` 版本时：重新生成 pnpm 补丁（`pnpm patch dsh-better-sidebar@<new>` → 手工迁移 `webRuntime→webStartup` 改动 → `pnpm patch-commit`），并更新 `package.json` 版本号与 `patches/` 下补丁文件名。
+升级 `dsh-better-sidebar` 版本时：重新生成 pnpm 补丁（`pnpm patch dsh-better-sidebar@<new>` → 手工迁移 `webRuntime→webStartup` 改动 → `pnpm patch-commit`），并按序更新 `package.json` 版本号 → `patches/` 补丁文件名 → `pnpm-workspace.yaml` 的 `patchedDependencies` 键与 `minimumReleaseAgeExclude` 条目 → `runtime-patch-policy.ts` 白名单键（reason 保留 webStartup 判断）；改完跑 `pnpm install` + `pnpm run verify-cordis-config`。

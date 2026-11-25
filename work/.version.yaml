@@ -1,0 +1,52 @@
+# ============================================================
+# .version.yaml — work 分支 版本与定制追踪
+#
+# 仓库：dsharnesswork（deepseek-harness 的 master_work 分支工作副本，guide_work 专属目录）
+# 用途：一眼看清「本分支相对上游 master 的版本与定制状态」
+# 维护：任何同步 / 升级 / 打包操作后更新本文件；流程见 win-dsh-package-sec
+# 版本明细：见 ../guide/.version/（每个版本一个 md，索引 0 索引.md）
+# 格式对照：../guide_code/.version.yaml（同格式，2026-10-23 对齐）
+# ============================================================
+
+checked_at: "2026-10-16"        # 本文件数据来源时间（work 版打造实录；实时状态待下次同步/打包时采集）
+
+# ---------- 仓库 ----------
+repo:
+  name: deepseek-harness
+  role: master_work 分支工作副本
+  path: E:\baizhoucode\companyagent\dsharnesswork
+
+# ---------- 上游 / 本分支（2026-10-16 实录） ----------
+upstream:
+  version: 0.2.1-alpha.4       # master_work 拉出时 master 最新
+  base_commit: 86a402200d      # master_work 拉出点
+
+branch:
+  name: master_work
+  version: 0.2.1-alpha.4
+  tracks: unknown              # 待采集
+
+# ---------- 同步状态 ----------
+# status 取值：synced / local-ahead / behind / diverged（含义见 ../guide_code/.version.yaml）
+sync:
+  status: unknown              # 待采集
+  version_aligned: unknown     # 待采集
+
+# ---------- 本地定制（明细见同目录分类文件夹） ----------
+customizations:
+  - name: work 品牌定制（薄荷绿）
+    kind: brand
+    doc: 品牌定制/薄荷绿品牌.md
+    what: "品牌机制移植 18 文件 + 薄荷绿全套改色（icon 底色 #A8E6CF / 鲸鱼 #2DBE8B）"
+    at: "2026-10-16"
+  - name: work 桌面端打包（Baizhou DSH Work）
+    kind: packaging
+    doc: 打包实录/打包记录.md
+    what: "0.2.1-alpha.4 unsigned 打包成功；AppId com.baizhou.dsh-work；产物 baizhou-dsh-work-*-win-x64-unsigned.exe"
+    at: "2026-10-16"
+
+# ---------- 复核命令（PowerShell，于 dsharnesswork 仓执行） ----------
+# $w = 'E:\baizhoucode\companyagent\dsharnesswork'
+# git -C $w fetch upstream
+# git -C $w rev-list --count master_work..upstream/master   # master_work 落后
+# git -C $w rev-list --count upstream/master..master_work   # master_work 领先

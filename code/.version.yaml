@@ -94,7 +94,7 @@ customizations:
     kind: plugin-preset
     doc: 插件预设/dsh-better-sidebar.md
     dir: packages/bundle/web-app
-    files: [package.json, cordis.patch.yml, patches/dsh-better-sidebar@0.26.0.patch]
+    files: [package.json, cordis.patch.yml, pnpm-workspace.yaml, patches/dsh-better-sidebar@0.26.0.patch, apps/desktop/scripts/runtime-patch-policy.ts]
     what: "外部插件 dsh-better-sidebar@0.26.0 替换内置 ui-sidebar-files；pnpm 补丁 webRuntime→webStartup；新增 dsh-mcp-client 依赖"
     installed_profiles: [web]
     git: committed             # 提交 0c22e47018 / acc18c8f0b
@@ -108,6 +108,24 @@ customizations:
     installed_profiles: [web]
     git: committed             # 提交 01812a8412
     at: "2026-10-20"
+  - name: dsh-hooks 生命周期 hooks 引擎接入
+    kind: plugin-preset
+    doc: 插件预设/dsh-hooks.md
+    dir: packages/bundle/web-app
+    files: [package.json, cordis.patch.yml]
+    what: "外部插件 dsh-hooks@0.14.4 随 web-app bundled 挂载；挂载行复用 id dsh-hooks（插件自带 bundle 补丁按 id 覆盖、不重复挂载）；hook 定义只在 profile 侧；无 pnpm 补丁，pnpm-workspace 与 runtime 白名单均无条目（预期状态）"
+    installed_profiles: [web]
+    git: committed             # 随快照初始提交 53181aa024b 入库，原接入提交号不可考
+    at: "2026-10-23"
+  - name: '@deepseek-ai/dsh-mcp-client MCP 驱动接入'
+    kind: plugin-preset
+    doc: 插件预设/dsh-mcp-client.md
+    dir: packages/bundle/web-app
+    files: [package.json]
+    what: "web-app 新增 workspace 依赖 @deepseek-ai/dsh-mcp-client（.master 的 web-app 无此依赖）；供 preset/profile 层挂载 MCP Server，无挂载行、无补丁；支撑业务 MCP（清单见 mcp/业务-mcp清单.md）"
+    installed_profiles: [web]
+    git: committed             # 随快照初始提交 53181aa024b 入库，原接入提交号不可考
+    at: "2026-10-24"
   - name: 业务 MCP 清单
     kind: mcp
     doc: mcp/业务-mcp清单.md

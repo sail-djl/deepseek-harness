@@ -2,7 +2,7 @@
 
 > code 分支专属 MCP 配置。登记处：`.guide_code/mcp/`。
 > MCP Server 内嵌在 agent 预设文件里（`packages/bundle/web-app/presets/bzcode-haiyu.patch.yml` / `bzcode-shuili.patch.yml`），无独立 MCP 配置文件。
-> 驱动插件：`@deepseek-ai/dsh-mcp-client`（`packages/mcp/mcp-client`），`transport: stdio`。
+> 驱动插件：`@deepseek-ai/dsh-mcp-client`（`packages/mcp/mcp-client`），`transport: stdio`；web-app 依赖接入登记见 [`../插件预设/dsh-mcp-client.md`](../插件预设/dsh-mcp-client.md)。
 
 ## ⚠️ 安全提示
 
